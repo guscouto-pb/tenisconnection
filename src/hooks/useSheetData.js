@@ -28,7 +28,15 @@ function parseTorneios(rows) {
         Quartas: parseDate(get('Prazo Quartas')),
         Semi: parseDate(get('Prazo Semi')),
         Final: parseDate(get('Prazo Final')),
-        Consolação: parseDate(get('Prazo Consolação')),
+      },
+      prazosConsol: {
+        R128: parseDate(get('Prazo Cons R128')),
+        R64: parseDate(get('Prazo Cons R64')),
+        R32: parseDate(get('Prazo Cons R32')),
+        R16: parseDate(get('Prazo Cons R16')),
+        Quartas: parseDate(get('Prazo Cons Quartas')),
+        Semi: parseDate(get('Prazo Cons Semi')),
+        Final: parseDate(get('Prazo Cons Final')),
       },
     }
   })
