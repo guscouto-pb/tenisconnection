@@ -23,7 +23,7 @@ const IconMaps = () => (
 export default function CourtCard({ quadra }) {
   const types = courtTypeLabel(quadra.rapidaAberta, quadra.rapidaCoberta, quadra.saibrotAberta, quadra.saibroCoberta)
   const waUrl = buildWhatsAppUrl(quadra.telefone)
-  const mapsUrl = buildMapsUrl(quadra.endereco, quadra.bairro)
+  const mapsUrl = buildMapsUrl(quadra.quadra, quadra.endereco, quadra.bairro)
   const noturnoX = quadra.valorNoturno === 'X' || quadra.valorNoturno === 'x'
 
   return (

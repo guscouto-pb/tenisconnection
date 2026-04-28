@@ -46,8 +46,8 @@ export function buildWhatsAppUrl(telefone) {
   return `https://wa.me/${num}`
 }
 
-export function buildMapsUrl(endereco, bairro) {
-  const query = encodeURIComponent(`${endereco}, ${bairro}, São Paulo, SP`)
+export function buildMapsUrl(nome, endereco, bairro) {
+  const query = encodeURIComponent(`${nome}, ${endereco}, ${bairro}, São Paulo, SP`)
   return `https://www.google.com/maps/search/?api=1&query=${query}`
 }
 
