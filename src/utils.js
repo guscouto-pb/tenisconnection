@@ -46,6 +46,11 @@ export function buildWhatsAppUrl(telefone) {
   return `https://wa.me/${num}`
 }
 
+export function buildMapsUrl(endereco, bairro) {
+  const query = encodeURIComponent(`${endereco}, ${bairro}, São Paulo, SP`)
+  return `https://www.google.com/maps/search/?api=1&query=${query}`
+}
+
 export function courtTypeLabel(rapidaAberta, rapidaCoberta, saibrotAberta, saibroCoberta) {
   const parts = []
   if (rapidaAberta > 0) parts.push(`${rapidaAberta} rápida aberta`)
