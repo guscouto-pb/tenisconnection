@@ -1,11 +1,17 @@
 import { buildWhatsAppUrl, buildMapsUrl, courtTypeLabel } from '../utils'
 
-const surfaceIcons = {
-  'rápida aberta': '☀️',
-  'rápida coberta': '🏟️',
-  'saibro aberta': '🌿',
-  'saibro coberta': '🏠',
-}
+const SurfaceSquare = ({ surface }) => (
+  <span
+    className="inline-block w-2.5 h-2.5 rounded-sm flex-shrink-0"
+    style={{ backgroundColor: surface === 'saibro' ? '#c17a4a' : '#3b82f6' }}
+  />
+)
+
+const IconUmbrella = () => (
+  <svg viewBox="0 0 24 24" className="w-3 h-3 flex-shrink-0" fill="currentColor">
+    <path d="M12 2C6.48 2 2 6.48 2 12h10V2zm0 0c5.52 0 10 4.48 10 10H12V2zm0 11v7c0 .55-.45 1-1 1s-1-.45-1-1v-1H8v1c0 1.66 1.34 3 3 3s3-1.34 3-3v-7h-2z"/>
+  </svg>
+)
 
 const IconWhatsApp = () => (
   <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
@@ -20,7 +26,13 @@ const IconMaps = () => (
   </svg>
 )
 
-export default function CourtCard({ quadra }) {
+const IconHeart = ({ filled }) => (
+  <svg viewBox="0 0 24 24" className="w-4 h-4" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+  </svg>
+)
+
+export default function CourtCard({ quadra, isFavorite, onToggleFavorite }) {
   const types = courtTypeLabel(quadra.rapidaAberta, quadra.rapidaCoberta, quadra.saibrotAberta, quadra.saibroCoberta)
   const waUrl = buildWhatsAppUrl(quadra.telefone)
   const mapsUrl = buildMapsUrl(quadra.quadra, quadra.endereco, quadra.bairro)
@@ -58,10 +70,11 @@ export default function CourtCard({ quadra }) {
         {/* Court types */}
         {types.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mb-3">
-            {types.map(t => (
-              <span key={t} className="text-[11px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full flex items-center gap-1">
-                <span>{surfaceIcons[t.replace(/^\d+ /, '')] || '🎾'}</span>
-                {t}
+            {types.map((t, i) => (
+              <span key={i} className="text-[11px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full flex items-center gap-1.5">
+                <SurfaceSquare surface={t.surface} />
+                {t.covered && <IconUmbrella />}
+                {t.count} {t.surface} {t.covered ? <strong>coberta</strong> : 'aberta'}
               </span>
             ))}
           </div>
@@ -93,6 +106,19 @@ export default function CourtCard({ quadra }) {
           <IconMaps />
           Abrir no Google Maps
         </a>
+
+        {/* Favorite button */}
+        <button
+          onClick={() => onToggleFavorite(quadra.quadra)}
+          className={`flex items-center justify-center gap-1.5 w-full py-2 rounded-xl border text-xs font-semibold transition-all ${
+            isFavorite
+              ? 'bg-tc-orange/10 text-tc-orange border-tc-orange/40'
+              : 'bg-white text-gray-400 border-gray-200 hover:border-tc-orange hover:text-tc-orange'
+          }`}
+        >
+          <IconHeart filled={isFavorite} />
+          {isFavorite ? 'Quadra favorita' : 'Marcar como favorita'}
+        </button>
       </div>
     </div>
   )

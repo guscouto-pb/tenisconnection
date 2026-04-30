@@ -1,10 +1,12 @@
 export function classifyTournament(torneio) {
+  if (!torneio.dataInicio || !torneio.dataFinal) return null
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const start = new Date(torneio.dataInicio)
   const end = new Date(torneio.dataFinal)
-  if (end < today) return 'encerrado'
-  if (start > today) return 'futuro'
+  if (isNaN(start) || isNaN(end)) return null
+  if (today > end) return 'encerrado'
+  if (today < start) return 'futuro'
   return 'andamento'
 }
 
@@ -53,9 +55,21 @@ export function buildMapsUrl(nome, endereco, bairro) {
 
 export function courtTypeLabel(rapidaAberta, rapidaCoberta, saibrotAberta, saibroCoberta) {
   const parts = []
-  if (rapidaAberta > 0) parts.push(`${rapidaAberta} rápida aberta`)
-  if (rapidaCoberta > 0) parts.push(`${rapidaCoberta} rápida coberta`)
-  if (saibrotAberta > 0) parts.push(`${saibrotAberta} saibro aberta`)
-  if (saibroCoberta > 0) parts.push(`${saibroCoberta} saibro coberta`)
+  if (rapidaAberta > 0)  parts.push({ count: rapidaAberta,  surface: 'rápida', covered: false })
+  if (rapidaCoberta > 0) parts.push({ count: rapidaCoberta, surface: 'rápida', covered: true  })
+  if (saibrotAberta > 0) parts.push({ count: saibrotAberta, surface: 'saibro', covered: false })
+  if (saibroCoberta > 0) parts.push({ count: saibroCoberta, surface: 'saibro', covered: true  })
   return parts
+}
+
+export function hasCoveredCourt(quadra) {
+  return (quadra.rapidaCoberta > 0) || (quadra.saibroCoberta > 0)
+}
+
+export function hasRapida(quadra) {
+  return (quadra.rapidaAberta > 0) || (quadra.rapidaCoberta > 0)
+}
+
+export function hasSaibro(quadra) {
+  return (quadra.saibrotAberta > 0) || (quadra.saibroCoberta > 0)
 }

@@ -3,50 +3,58 @@ import { deadlineStatus, formatDate, typeBadgeStyle } from '../utils'
 
 const PHASE_ORDER = ['R128', 'R64', 'R32', 'R16', 'Quartas', 'Semi', 'Final']
 
-const statusStyles = {
-  urgent: 'bg-red-100 text-red-700 border-red-200 font-semibold',
-  soon: 'bg-amber-50 text-amber-700 border-amber-200 font-medium',
-  ok: 'bg-green-50 text-green-700 border-green-200',
-  past: 'bg-gray-50 text-gray-400 border-gray-100',
-  info: 'bg-blue-50 text-blue-600 border-blue-100',
-}
-
-const statusDot = {
-  urgent: 'bg-red-500',
-  soon: 'bg-amber-400',
-  ok: 'bg-green-500',
-  past: 'bg-gray-300',
-  info: 'bg-blue-400',
-}
-
-function PhaseGrid({ prazos }) {
+function PhaseBracket({ prazos }) {
   const active = PHASE_ORDER.filter(p => prazos[p] != null)
   if (active.length === 0) {
     return <p className="text-xs text-gray-400 italic py-1">Prazos a definir</p>
   }
   return (
-    <div className="grid grid-cols-2 gap-1.5">
-      {active.map(fase => {
-        const val = prazos[fase]
-        const st = deadlineStatus(val)
-        return (
-          <div
-            key={fase}
-            className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg border text-xs ${statusStyles[st]}`}
-          >
-            <span className="flex items-center gap-1.5">
-              <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${statusDot[st]}`} />
-              {fase}
-            </span>
-            <span className="tabular-nums text-[11px]">{formatDate(val)}</span>
-          </div>
-        )
-      })}
+    <div>
+      {/* Header */}
+      <div className="flex items-center gap-2 mb-0.5">
+        <div className="w-4 flex-shrink-0" />
+        <div className="flex-1 flex justify-between px-0.5">
+          <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Rodada</span>
+          <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Jogar até</span>
+        </div>
+      </div>
+
+      {/* Rows */}
+      <div className="flex flex-col">
+        {active.map((fase, idx) => {
+          const val = prazos[fase]
+          const st = deadlineStatus(val)
+          const isPast = st === 'past'
+          const isLast = idx === active.length - 1
+          const isFinal = fase === 'Final'
+
+          return (
+            <div key={fase} className="flex items-stretch gap-2">
+              {/* Connector line + dot */}
+              <div className="flex flex-col items-center w-4 flex-shrink-0">
+                <div className={`w-px flex-1 ${idx === 0 ? 'bg-transparent' : 'bg-gray-200'}`} />
+                <div className={`w-2 h-2 rounded-full flex-shrink-0 ${isPast ? 'bg-gray-300' : 'bg-tc-orange'}`} />
+                <div className={`w-px flex-1 ${isLast ? 'bg-transparent' : 'bg-gray-200'}`} />
+              </div>
+
+              {/* Content */}
+              <div className={`flex items-center justify-between flex-1 py-1.5 ${!isLast ? 'border-b border-gray-50' : ''}`}>
+                <span className={`text-xs ${isFinal ? 'font-bold' : 'font-medium'} ${isPast ? 'text-gray-400' : 'text-gray-800'}`}>
+                  {fase}
+                </span>
+                <span className={`text-[11px] tabular-nums ${isPast ? 'text-gray-400' : 'text-gray-800 font-medium'}`}>
+                  {formatDate(val)}
+                </span>
+              </div>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
 
-export default function TournamentCard({ torneio, status }) {
+export default function TournamentCard({ torneio, status, isFavorite, onToggleFavorite }) {
   const [activeTab, setActiveTab] = useState('principal')
   const badge = typeBadgeStyle(torneio.tipo)
 
@@ -57,12 +65,17 @@ export default function TournamentCard({ torneio, status }) {
     ? new Date(torneio.dataFinal + 'T12:00:00')
     : null
 
+  const fmtMonth = (date) => {
+    const s = date.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }).replace('.', '')
+    return s.charAt(0).toUpperCase() + s.slice(1)
+  }
+
   const formattedPeriod = endDate
-    ? `${startDate.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }).replace('.', '')} — ${endDate.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }).replace('.', '')}`
+    ? `${fmtMonth(startDate)} — ${fmtMonth(endDate)}`
     : `A partir de ${startDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}`
 
   return (
-    <div className={`bg-white rounded-2xl shadow-sm border overflow-hidden ${status === 'encerrado' ? 'opacity-60' : ''}`}>
+    <div className={`bg-white rounded-2xl shadow-sm border overflow-hidden flex flex-col ${status === 'encerrado' ? 'opacity-60' : ''}`}>
       {/* Header */}
       <div className="p-4 pb-3">
         <div className="flex items-start justify-between gap-2 mb-1">
@@ -71,7 +84,7 @@ export default function TournamentCard({ torneio, status }) {
             {torneio.tipo}
           </span>
         </div>
-        <p className="text-xs text-gray-400 capitalize">{formattedPeriod}</p>
+        <p className="text-xs text-gray-400">{formattedPeriod}</p>
       </div>
 
       {/* Tabs */}
@@ -96,16 +109,30 @@ export default function TournamentCard({ torneio, status }) {
         </button>
       </div>
 
-      {/* Content */}
-      <div className="px-4 py-3">
+      {/* Bracket content */}
+      <div className="px-4 py-3 flex-1">
         {activeTab === 'principal' && (
-          <PhaseGrid prazos={torneio.prazos} />
+          <PhaseBracket prazos={torneio.prazos} />
         )}
         {activeTab === 'consolacao' && (
           hasConsol
-            ? <PhaseGrid prazos={torneio.prazosConsol} />
+            ? <PhaseBracket prazos={torneio.prazosConsol} />
             : <p className="text-xs text-gray-400 italic py-1">Sem chave de consolação</p>
         )}
+      </div>
+
+      {/* Favorite button */}
+      <div className="px-4 pb-4 pt-2 border-t border-gray-50">
+        <button
+          onClick={() => onToggleFavorite(torneio.torneio)}
+          className={`w-full py-2 text-xs font-semibold rounded-xl border transition-all ${
+            isFavorite
+              ? 'bg-tc-orange/10 text-tc-orange border-tc-orange/40'
+              : 'bg-white text-gray-400 border-gray-200 hover:border-tc-orange hover:text-tc-orange'
+          }`}
+        >
+          {isFavorite ? '✓ Estou jogando esse torneio' : '+ Estou jogando esse torneio'}
+        </button>
       </div>
     </div>
   )
