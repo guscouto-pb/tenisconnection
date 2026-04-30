@@ -2,7 +2,7 @@ export default function Header({ activeTab, onTabChange }) {
   return (
     <header className="bg-tc-orange text-white shadow-lg sticky top-0 z-50">
       <div className="max-w-5xl mx-auto px-4 py-3 flex items-center gap-4">
-        <img src="/logo.avif" alt="Tênis Connection" className="h-10 sm:h-12 flex-shrink-0" /> {/* test deploy */}
+        <img src="/logo.avif" alt="Tênis Connection" className="h-10 sm:h-12 flex-shrink-0" />
 
         <nav className="flex gap-1 ml-auto">
           <button
