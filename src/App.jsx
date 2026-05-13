@@ -36,7 +36,7 @@ function App() {
       )}
 
       <footer className="text-center py-6 text-xs text-gray-400">
-        © {new Date().getFullYear()} Tênis Connection · by Genial Investimentos
+        © {new Date().getFullYear()} Tênis Connection
       </footer>
     </div>
   )

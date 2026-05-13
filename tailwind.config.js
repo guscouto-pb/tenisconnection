@@ -5,9 +5,9 @@ export default {
     extend: {
       colors: {
         tc: {
-          orange: '#C96B2A',
-          'orange-dark': '#A8561F',
-          'orange-light': '#E07A32',
+          orange: '#E2671B',
+          'orange-dark': '#C96B2A',
+          'orange-light': '#F07830',
           gold: '#D4A820',
           'gold-dark': '#B8901A',
         },

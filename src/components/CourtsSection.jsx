@@ -18,6 +18,8 @@ export default function CourtsSection({ quadras }) {
   const [search, setSearch] = useState('')
   const [favorites, toggleFavorite, isFavorite] = useFavorites('tc_quadras')
 
+  const favoritasCount = quadras.filter(q => isFavorite(q.quadra)).length
+
   const filtered = quadras.filter(q => {
     if (filter === 'favoritas' && !isFavorite(q.quadra)) return false
     if (filter === 'rapida' && !hasRapida(q)) return false
@@ -51,13 +53,20 @@ export default function CourtsSection({ quadras }) {
           <button
             key={f.key}
             onClick={() => setFilter(f.key)}
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border ${
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all border flex items-center gap-1.5 ${
               filter === f.key
                 ? 'bg-gray-800 text-white border-gray-800'
                 : 'bg-white text-gray-500 border-gray-200 hover:border-gray-400 hover:text-gray-700'
             }`}
           >
             {f.label}
+            {f.key === 'favoritas' && favoritasCount > 0 && (
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                filter === 'favoritas' ? 'bg-white/25 text-white' : 'bg-gray-100 text-gray-400'
+              }`}>
+                {favoritasCount}
+              </span>
+            )}
           </button>
         ))}
       </div>
